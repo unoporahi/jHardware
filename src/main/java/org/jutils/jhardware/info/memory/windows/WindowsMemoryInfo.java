@@ -15,6 +15,8 @@ package org.jutils.jhardware.info.memory.windows;
 
 import com.profesorfalken.wmi4java.WMI4Java;
 import com.profesorfalken.wmi4java.WMIClass;
+
+import java.util.Collections;
 import java.util.Map;
 import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
 
@@ -24,6 +26,9 @@ import org.jutils.jhardware.info.memory.AbstractMemoryInfo;
  * @author Javier Garcia Alonso
  */
 public final class WindowsMemoryInfo extends AbstractMemoryInfo {
+	
+    private static final String FREE_PHYSICAL_MEMORY = "FreePhysicalMemory";
+    private static final String TOTAL_PHYSICAL_MEMORY = "TotalPhysicalMemory";	
 
     @Override
     protected Map<String, String> parseInfo() {
@@ -32,9 +37,10 @@ public final class WindowsMemoryInfo extends AbstractMemoryInfo {
         memoryDataMap.putAll(WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_PHYSICALMEMORY));        
 
         memoryDataMap.put("MemAvailable", memoryDataMap.get("AvailableKBytes"));
-        memoryDataMap.put("MemFree", 
-                WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("FreePhysicalMemory"));
-        memoryDataMap.put("MemTotal", WMI4Java.get().VBSEngine().getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get("TotalPhysicalMemory"));
+        memoryDataMap.put("MemFree", WMI4Java.get().properties(Collections.singletonList(FREE_PHYSICAL_MEMORY)).VBSEngine()
+                .getWMIObject(WMIClass.WIN32_OPERATINGSYSTEM).get(FREE_PHYSICAL_MEMORY));
+        memoryDataMap.put("MemTotal", WMI4Java.get().properties(Collections.singletonList(TOTAL_PHYSICAL_MEMORY)).VBSEngine()
+                .getWMIObject(WMIClass.WIN32_COMPUTERSYSTEM).get(TOTAL_PHYSICAL_MEMORY));        
 
         return memoryDataMap;
     }
